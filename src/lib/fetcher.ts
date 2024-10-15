@@ -6,12 +6,14 @@ async function fetcher({
   method,
   headers,
   revalidate,
+  tags,
 }: {
   url: string;
   body?: any;
   method?: string;
   headers?: any;
   revalidate?: number;
+  tags?: string[];
 }) {
   const response = await fetch(url, {
     method: method || "GET",
@@ -21,6 +23,7 @@ async function fetcher({
     body: body ? JSON.stringify(body) : null,
     next: {
       revalidate: revalidate || 3600,
+      tags: tags || undefined,
     },
   });
   if (!response.ok) {

@@ -38,7 +38,7 @@ export function CategoryCard({ id, name }: CategoryCardProps) {
           {difficulties.map((difficulty) => (
             <Link
               key={difficulty.name}
-              href={`/questions/${id}?difficulty=${difficulty.name.toLowerCase()}`}
+              href={`/question?category=${id}&difficulty=${difficulty.name.toLowerCase()}`}
               className="w-full"
             >
               <Button
