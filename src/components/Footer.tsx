@@ -9,7 +9,7 @@ export function Footer() {
           <Link href="/" className="flex items-center mb-4 md:mb-0">
             <Brain className="w-8 h-8 text-primary mr-2" />
             <span className="text-2xl font-bold text-foreground">
-              TriviaMaster
+              TriviaWorld
             </span>
           </Link>
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
@@ -43,7 +43,7 @@ export function Footer() {
         </div>
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} TriviaMaster. All rights reserved.
+            &copy; {new Date().getFullYear()} TriviaWorld. All rights reserved.
           </p>
         </div>
       </div>

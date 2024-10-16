@@ -15,7 +15,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center space-x-2">
             <Brain className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold text-foreground">
-              TriviaMaster
+              TriviaWorld
             </span>
           </Link>
           <div className="flex space-x-4">
