@@ -21,6 +21,7 @@ import { useRouter } from "@/i18n/routing";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoryQuestions } from "@/lib/endpoints";
+import { Skeleton } from "@/components/ui/skeleton";
 export default function QuestionAndAnswers({
   difficulty,
   categoryId,
@@ -32,7 +33,7 @@ export default function QuestionAndAnswers({
   const [showResult, setShowResult] = useState<boolean>(false);
   const [isAnswered, setIsAnswered] = useState<boolean>(false);
   const router = useRouter();
-  const { data, refetch } = useQuery({
+  const { data, refetch, isFetching, isError } = useQuery({
     queryKey: ["questions", categoryId, difficulty],
     queryFn: () => {
       return getCategoryQuestions({
@@ -61,12 +62,20 @@ export default function QuestionAndAnswers({
     setShowResult(false);
     setIsAnswered(false);
   };
+  if (isError) {
+    return <div>Something went wrong</div>;
+  }
   return (
     <div className=" mx-auto px-4 py-8 max-w-7xl">
       <Card className="mb-8 ">
         <CardHeader>
           <CardTitle className="text-3xl font-bold flex items-center justify-between">
-            <span>{data?.category}</span>
+            {isFetching ? (
+              <Skeleton className="w-1/4 h-10 rounded-md" />
+            ) : (
+              <span>{data?.category}</span>
+            )}
+
             <div className="flex items-center space-x-2">
               <Brain className="w-6 h-6" />
               <Select
@@ -96,32 +105,51 @@ export default function QuestionAndAnswers({
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle
-            className="text-2xl font-semibold"
-            dangerouslySetInnerHTML={{ __html: data?.question }}
-          ></CardTitle>
+          <CardTitle className="text-2xl font-semibold">
+            {isFetching ? (
+              <div className="flex flex-col gap-2">
+                <Skeleton className="w-full h-7 rounded-md" />
+                <Skeleton className="w-1/4 h-7 rounded-md" />
+              </div>
+            ) : (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: data?.question,
+                }}
+              ></span>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <RadioGroup
-            value={selectedAnswer || ""}
-            onValueChange={setSelectedAnswer}
-            className="space-y-4"
-          >
-            {data?.allAnswers?.map((answer, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <RadioGroupItem
-                  disabled={isAnswered}
-                  value={answer}
-                  id={`answer-${index}`}
-                />
-                <Label
-                  htmlFor={`answer-${index}`}
-                  className="flex-grow p-4 bg-background/60 rounded-md hover:bg-background/80 transition-colors cursor-pointer"
-                  dangerouslySetInnerHTML={{ __html: answer }}
-                ></Label>
-              </div>
-            ))}
-          </RadioGroup>
+          {isFetching ? (
+            <div className="flex flex-col gap-6 ">
+              <Skeleton className="w-full h-10 rounded-md" />
+              <Skeleton className="w-full h-10 rounded-md" />
+              <Skeleton className="w-full h-10 rounded-md" />
+              <Skeleton className="w-full h-10 rounded-md" />
+            </div>
+          ) : (
+            <RadioGroup
+              value={selectedAnswer || ""}
+              onValueChange={setSelectedAnswer}
+              className="space-y-4"
+            >
+              {data?.allAnswers?.map((answer, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    disabled={isAnswered}
+                    value={answer}
+                    id={`answer-${index}`}
+                  />
+                  <Label
+                    htmlFor={`answer-${index}`}
+                    className="flex-grow p-4 bg-background/60 rounded-md hover:bg-background/80 transition-colors cursor-pointer"
+                    dangerouslySetInnerHTML={{ __html: answer }}
+                  ></Label>
+                </div>
+              ))}
+            </RadioGroup>
+          )}
         </CardContent>
         <CardFooter className="flex justify-between">
           {!showResult ? (

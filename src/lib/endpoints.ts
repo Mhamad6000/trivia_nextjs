@@ -1,8 +1,8 @@
 "use server";
 import { fetcher } from "@/lib/fetcher";
-import { redirect } from "@/i18n/routing";
+import { redirect } from "next/navigation";
 import { shuffleArray } from "./utils";
-
+import { cookies } from "next/headers";
 export const getCategories = async ({
   params,
 }: {
@@ -13,8 +13,6 @@ export const getCategories = async ({
       url: `https://opentdb.com/api_category.php`,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.KURDSATNEWS_TOKEN}`,
-        "Accept-Language": "ckb",
       },
       revalidate: params.revalidate || 3600,
       method: "GET",
@@ -23,9 +21,9 @@ export const getCategories = async ({
     return response;
   } catch (error: any) {
     if (error.statusCode === 404) {
-      redirect("/404");
+      redirect("/en/404");
     } else {
-      redirect("/500");
+      redirect("/en/500");
     }
   }
 };
@@ -36,20 +34,38 @@ export const getCategoryQuestions = async ({
   params: { id: string; revalidate?: number; difficulty?: string };
 }) => {
   try {
+    let token = cookies().get("trivia_token")?.value;
+
+    // If no token is found, request a new one
+    if (!token) {
+      const tokenResponse = await fetcher({
+        url: "https://opentdb.com/api_token.php?command=request",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        revalidate: 5,
+        method: "GET",
+      });
+      const tokenData = await tokenResponse.json();
+      token = tokenData.token;
+
+      // Set the token in the cookies (e.g., for 24 hours)
+      cookies().set("trivia_token", token as string, { maxAge: 18000 }); // 86400 seconds = 24 hours
+    }
+
     const response = await fetcher({
       url: `https://opentdb.com/api.php?amount=1&category=${
         params.id
-      }&page=1&difficulty=${params.difficulty || ""}`,
+      }&difficulty=${params.difficulty || ""}&token=${token}`,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.KURDSATNEWS_TOKEN}`,
-        "Accept-Language": "ckb",
       },
-      revalidate: params.revalidate || 3600,
+      // make it 5 seconds for testing purposes
+      revalidate: 0,
       method: "GET",
       tags: ["questions"],
     });
-    const data = response.results[0];
+    const data = response?.results[0];
     return {
       type: data.type,
       difficulty: data.difficulty,
@@ -62,10 +78,11 @@ export const getCategoryQuestions = async ({
       ]),
     };
   } catch (error: any) {
+    console.log(error);
     if (error.statusCode === 404) {
-      redirect("/404");
+      redirect("/en/404");
     } else {
-      redirect("/500");
+      redirect("/en/500");
     }
   }
 };

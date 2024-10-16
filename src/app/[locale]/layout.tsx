@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import NextTopLoader from "nextjs-toploader";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -47,9 +48,10 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <Navbar />
-              <div className="container px-4 md:px-6 lg:px-8 py-8 lg:py-12">
+              <div className="container px-4 md:px-6 lg:px-8 py-8 lg:py-12 min-h-screen">
                 {children}
               </div>
+              <Footer />
             </ThemeProvider>
           </ReactQueryProvider>
         </NextIntlClientProvider>

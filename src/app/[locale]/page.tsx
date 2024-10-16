@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Zap, Target, Trophy, Clock, Users } from "lucide-react";
+import { Brain, Zap, Target, Trophy, Compass, CheckCircle } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -38,14 +38,14 @@ export default function HomePage() {
           description="Compare your scores with friends and aim for the top"
         />
         <FeatureCard
-          icon={Clock}
-          title="Time Attack"
-          description="Race against the clock in our timed quiz mode"
+          icon={Compass}
+          title="Explore"
+          description="Discover new topics and expand your horizons with a wide variety of trivia categories."
         />
         <FeatureCard
-          icon={Users}
-          title="Multiplayer"
-          description="Challenge friends in real-time multiplayer quizzes"
+          icon={CheckCircle}
+          title="Multiple Choice & True/False"
+          description="Answer a wide variety of questions with multiple-choice or true/false formats"
         />
       </div>
 

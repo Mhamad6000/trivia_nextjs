@@ -1,5 +1,5 @@
 // export { kurdsatApi, kurdsatNewsApi, kurdbinApi };
-
+"use server";
 async function fetcher({
   url,
   body,
@@ -22,7 +22,7 @@ async function fetcher({
     },
     body: body ? JSON.stringify(body) : null,
     next: {
-      revalidate: revalidate || 3600,
+      revalidate: revalidate || 0,
       tags: tags || undefined,
     },
   });
