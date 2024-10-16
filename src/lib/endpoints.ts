@@ -46,7 +46,7 @@ export const getCategoryQuestions = async ({
         revalidate: 5,
         method: "GET",
       });
-      const tokenData = await tokenResponse.json();
+      const tokenData = tokenResponse;
       token = tokenData.token;
 
       // Set the token in the cookies (e.g., for 24 hours)
