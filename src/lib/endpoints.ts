@@ -49,8 +49,7 @@ export const getCategoryQuestions = async ({
       const tokenData = tokenResponse;
       token = tokenData.token;
 
-      // Set the token in the cookies (e.g., for 24 hours)
-      cookies().set("trivia_token", token as string, { maxAge: 18000 }); // 86400 seconds = 24 hours
+      cookies().set("trivia_token", token as string, { maxAge: 18000000 }); // 86400 seconds = 24 hours
     }
 
     const response = await fetcher({
