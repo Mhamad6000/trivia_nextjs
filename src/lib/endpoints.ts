@@ -36,11 +36,7 @@ export const getCategoryQuestions = async ({
   try {
     let token = cookies().get("trivia_token")?.value;
     // If no token is found, request a new one
-    if (
-      !token ||
-      new Date()?.getTime() > JSON.parse(token)?.maxAge ||
-      JSON?.parse(token)?.value === undefined
-    ) {
+    if (!token || JSON?.parse(token)?.value === undefined) {
       const tokenResponse = await fetcher({
         url: "https://opentdb.com/api_token.php?command=request",
         headers: {
