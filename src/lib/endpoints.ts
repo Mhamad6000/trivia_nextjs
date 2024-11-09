@@ -36,13 +36,18 @@ export const getCategoryQuestions = async ({
   try {
     let token = cookies().get("trivia_token")?.value;
     // If no token is found, request a new one
-    if (!token || JSON?.parse(token)?.value === undefined) {
+
+    if (
+      !token ||
+      JSON?.parse(token)?.value === undefined ||
+      JSON.parse(token)?.maxAge < new Date()?.getTime()
+    ) {
       const tokenResponse = await fetcher({
         url: "https://opentdb.com/api_token.php?command=request",
         headers: {
           "Content-Type": "application/json",
         },
-        revalidate: 2,
+        revalidate: 0,
         method: "GET",
       });
       const expirationTime = new Date()?.getTime() + 18000000;
@@ -51,39 +56,33 @@ export const getCategoryQuestions = async ({
         maxAge: expirationTime,
       });
 
-      cookies().set(
-        "trivia_token",
-        JSON.stringify({
-          value: token,
-          maxAge: expirationTime,
-        }) as string
-      );
+      cookies().set("trivia_token", token);
     }
-
     const response = await fetcher({
       url: `https://opentdb.com/api.php?amount=1&category=${
-        params.id
+        params?.id
       }&difficulty=${params.difficulty || ""}&token=${
-        JSON.parse(token as string)?.value
+        JSON.parse(token)?.value
       }`,
       headers: {
         "Content-Type": "application/json",
       },
       // make it 5 seconds for testing purposes
-      revalidate: 2,
+      revalidate: 4,
       method: "GET",
       tags: ["questions"],
     });
-    const data = response?.results[0];
+    const data = response?.results?.length > 0 ? response?.results[0] : [0];
+
     return {
-      type: data.type,
-      difficulty: data.difficulty,
-      question: data.question,
-      category: data.category,
-      correctAnswer: data.correct_answer,
+      type: data?.type,
+      difficulty: data?.difficulty,
+      question: data?.question,
+      category: data?.category,
+      correctAnswer: data?.correct_answer,
       allAnswers: shuffleArray([
-        ...data.incorrect_answers,
-        data.correct_answer,
+        ...data?.incorrect_answers,
+        data?.correct_answer,
       ]),
     };
   } catch (error: any) {
