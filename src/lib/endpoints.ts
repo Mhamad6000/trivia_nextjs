@@ -35,9 +35,13 @@ export const getCategoryQuestions = async ({
 }) => {
   try {
     let token = cookies().get("trivia_token")?.value;
-
+    // console.log(token expire time);
     // If no token is found, request a new one
-    if (!token) {
+    if (
+      !token ||
+      new Date()?.getTime() > JSON.parse(token)?.maxAge ||
+      JSON?.parse(token)?.value === undefined
+    ) {
       const tokenResponse = await fetcher({
         url: "https://opentdb.com/api_token.php?command=request",
         headers: {
@@ -49,18 +53,29 @@ export const getCategoryQuestions = async ({
       const tokenData = tokenResponse;
       token = tokenData.token;
 
-      cookies().set("trivia_token", token as string, { maxAge: 18000000 }); // 86400 seconds = 24 hours
+      const expirationTime = new Date();
+      expirationTime.setHours(expirationTime.getHours() + 5);
+      console.log("Token expires at: ", expirationTime);
+      cookies().set(
+        "trivia_token",
+        JSON.stringify({
+          value: token,
+          maxAge: expirationTime.getTime(),
+        }) as string
+      );
     }
 
     const response = await fetcher({
       url: `https://opentdb.com/api.php?amount=1&category=${
         params.id
-      }&difficulty=${params.difficulty || ""}&token=${token}`,
+      }&difficulty=${params.difficulty || ""}&token=${
+        JSON.parse(token as string)?.value
+      }`,
       headers: {
         "Content-Type": "application/json",
       },
       // make it 5 seconds for testing purposes
-      revalidate: 0,
+      revalidate: 5,
       method: "GET",
       tags: ["questions"],
     });
