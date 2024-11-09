@@ -35,7 +35,6 @@ export const getCategoryQuestions = async ({
 }) => {
   try {
     let token = cookies().get("trivia_token")?.value;
-    // console.log(token expire time);
     // If no token is found, request a new one
     if (
       !token ||
@@ -50,17 +49,17 @@ export const getCategoryQuestions = async ({
         revalidate: 2,
         method: "GET",
       });
-      const tokenData = tokenResponse;
-      token = tokenData.token;
+      const expirationTime = new Date()?.getTime() + 18000000;
+      token = JSON.stringify({
+        value: tokenResponse.token,
+        maxAge: expirationTime,
+      });
 
-      const expirationTime = new Date();
-      expirationTime.setHours(expirationTime.getHours() + 5);
-      console.log("Token expires at: ", expirationTime);
       cookies().set(
         "trivia_token",
         JSON.stringify({
           value: token,
-          maxAge: expirationTime.getTime(),
+          maxAge: expirationTime,
         }) as string
       );
     }
