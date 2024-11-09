@@ -47,7 +47,7 @@ export const getCategoryQuestions = async ({
         headers: {
           "Content-Type": "application/json",
         },
-        revalidate: 5,
+        revalidate: 2,
         method: "GET",
       });
       const tokenData = tokenResponse;
@@ -75,7 +75,7 @@ export const getCategoryQuestions = async ({
         "Content-Type": "application/json",
       },
       // make it 5 seconds for testing purposes
-      revalidate: 5,
+      revalidate: 2,
       method: "GET",
       tags: ["questions"],
     });
@@ -92,7 +92,6 @@ export const getCategoryQuestions = async ({
       ]),
     };
   } catch (error: any) {
-    console.log(error);
     if (error.statusCode === 404) {
       redirect("/en/404");
     } else {
